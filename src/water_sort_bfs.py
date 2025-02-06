@@ -8,6 +8,8 @@ from typing import Optional
 Tubes = list[list[str]]
 Solution = list[list[list[str]]]
 
+MAX_TUBE_CAPACITY = 4
+
 
 def parse_input(filename: str) -> Tubes:
     with open(filename, "r") as file:
@@ -31,7 +33,7 @@ def get_next_states(
             if i == j:
                 continue
             if (len(current_tubes[j]) == 0) or (
-                len(current_tubes[j]) < 4
+                len(current_tubes[j]) < MAX_TUBE_CAPACITY
                 and current_tubes[j][-1] == current_tubes[i][-1]
             ):
                 new_tubes = deepcopy(current_tubes)
