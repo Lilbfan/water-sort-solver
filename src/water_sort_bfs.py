@@ -4,9 +4,10 @@ import sys
 from collections import deque
 from copy import deepcopy
 from typing import Optional
+from display import Step
+
 
 Tubes = list[list[str]]
-Solution = list[list[list[str]]]
 
 MAX_TUBE_CAPACITY = 4
 
@@ -63,7 +64,7 @@ def get_next_states(
     return next_states
 
 
-def bfs_solve(start_tubes: Tubes) -> Optional[Solution]:
+def bfs_solve(start_tubes: Tubes) -> Optional[list[Step]]:
     queue = deque([(start_tubes, [])])
     visited = set()
 
@@ -80,7 +81,7 @@ def bfs_solve(start_tubes: Tubes) -> Optional[Solution]:
 
         for i, j, next_tubes in get_next_states(tubes):
             queue.append(
-                (next_tubes, path + [[{"from": i, "to": j, "state": next_tubes}]])
+                (next_tubes, path + [Step(from_tube=i, to_tube=j, nTubes=len(tubes))])
             )
 
     print("No solution found", file=sys.stderr)
@@ -92,9 +93,10 @@ def bfs_solve(start_tubes: Tubes) -> Optional[Solution]:
 def main(filename: str):
     tubes = parse_input(filename)
     solution = bfs_solve(tubes)
-    print(json.dumps(solution))
     if solution is None:
         exit(1)
+    for step in solution:
+        print(step)
 
 
 if __name__ == "__main__":
