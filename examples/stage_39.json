@@ -1,12 +1,12 @@
 {
     "tubes": [
-        ["r", "t", "t", "y"],
-        ["d", "d", "d", "y"],
-        ["r", "r", "d", "b"],
-        ["g", "g", "g", "b"],
-        ["b", "y", "y", "p"],
-        ["t", "t", "p", "p"],
-        ["b", "g", "r", "p"],
+        ["red", "tiffany", "tiffany", "yellow"],
+        ["forest", "forest", "forest", "yellow"],
+        ["red", "red", "forest", "blue"],
+        ["green", "green", "green", "blue"],
+        ["blue", "yellow", "yellow", "pink"],
+        ["tiffany", "tiffany", "pink", "pink"],
+        ["blue", "green", "red", "pink"],
         []
     ]
 }
