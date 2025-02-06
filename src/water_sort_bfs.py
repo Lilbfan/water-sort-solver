@@ -17,12 +17,33 @@ def parse_input(filename: str) -> Tubes:
 
 
 def is_solved(tubes: Tubes) -> bool:
-    return all(len(set(tube)) <= 1 for tube in tubes)
+    return all(
+        len(set(tube)) <= 1 and (len(tube) == 0 or len(tube) == MAX_TUBE_CAPACITY)
+        for tube in tubes
+    )
+
+
+def num_able_to_move(tubes: Tubes, i: int, j: int) -> int:
+    # We have to continuously pop out the top element of the tube i until the color changes.
+    # And we have to check if the tube j is empty or the top element of the tube j is the same as the color.
+    # If the tube j is not empty, we have to check if the tube j has space to add the color
+    color = tubes[i].pop()
+    n_move = 1
+    while len(tubes[i]) > 0 and tubes[i][-1] == color:
+        n_move += 1
+        tubes[i].pop()
+
+    if len(tubes[j]) == 0:
+        return n_move
+
+    if len(tubes[j]) + n_move <= MAX_TUBE_CAPACITY and tubes[j][-1] == color:
+        return n_move
+    return 0
 
 
 def get_next_states(
     current_tubes: list[list[str]],
-) -> list[tuple[int, int, list[list[str]]]]:
+) -> list[tuple[int, int, Tubes]]:
     next_states = []
     num_tubes = len(current_tubes)
 
@@ -32,13 +53,11 @@ def get_next_states(
         for j in range(num_tubes):
             if i == j:
                 continue
-            if (len(current_tubes[j]) == 0) or (
-                len(current_tubes[j]) < MAX_TUBE_CAPACITY
-                and current_tubes[j][-1] == current_tubes[i][-1]
-            ):
+            n_move = num_able_to_move(deepcopy(current_tubes), i, j)
+            if n_move != 0:
                 new_tubes = deepcopy(current_tubes)
-                color = new_tubes[i].pop()
-                new_tubes[j].append(color)
+                for _ in range(n_move):
+                    new_tubes[j].append(new_tubes[i].pop())
                 next_states.append((i, j, new_tubes))
 
     return next_states
@@ -65,7 +84,7 @@ def bfs_solve(start_tubes: Tubes) -> Optional[Solution]:
             )
 
     print("No solution found", file=sys.stderr)
-    exit(1)
+    return None
 
 
 @click.command()
@@ -74,6 +93,8 @@ def main(filename: str):
     tubes = parse_input(filename)
     solution = bfs_solve(tubes)
     print(json.dumps(solution))
+    if solution is None:
+        exit(1)
 
 
 if __name__ == "__main__":
