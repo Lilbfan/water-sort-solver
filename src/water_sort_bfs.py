@@ -1,5 +1,6 @@
 import click
 import json
+import sys
 from collections import deque
 from copy import deepcopy
 from typing import Optional
@@ -29,12 +30,14 @@ def get_next_states(
         for j in range(num_tubes):
             if i == j:
                 continue
-            if not current_tubes[j] or current_tubes[i][-1] == current_tubes[j][-1]:
-                if len(current_tubes[j]) < len(current_tubes[i]) + 1:
-                    new_tubes = deepcopy(current_tubes)
-                    color = new_tubes[i].pop()
-                    new_tubes[j].append(color)
-                    next_states.append((i, j, new_tubes))
+            if (len(current_tubes[j]) == 0) or (
+                len(current_tubes[j]) < 4
+                and current_tubes[j][-1] == current_tubes[i][-1]
+            ):
+                new_tubes = deepcopy(current_tubes)
+                color = new_tubes[i].pop()
+                new_tubes[j].append(color)
+                next_states.append((i, j, new_tubes))
 
     return next_states
 
@@ -59,7 +62,8 @@ def bfs_solve(start_tubes: Tubes) -> Optional[Solution]:
                 (next_tubes, path + [[{"from": i, "to": j, "state": next_tubes}]])
             )
 
-    return None
+    print("No solution found", file=sys.stderr)
+    exit(1)
 
 
 @click.command()
