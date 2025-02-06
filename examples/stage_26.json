@@ -1,0 +1,10 @@
+{
+    "tubes": [
+        ["red", "blue", "blue"],
+        ["red", "yellow", "yellow"],
+        ["blue", "green", "green", "red"],
+        ["blue", "yellow", "green"],
+        ["red", "green", "yellow"],
+        []
+    ]
+}
