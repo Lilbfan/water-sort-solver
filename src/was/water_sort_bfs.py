@@ -1,10 +1,9 @@
-import click
 import sys
 from collections import deque
 from copy import deepcopy
 from typing import Optional
-from display import Step
-from common import parse_input, Tubes, MAX_TUBE_CAPACITY
+from was.display import Step
+from was.common import Tubes, MAX_TUBE_CAPACITY
 
 
 def is_solved(tubes: Tubes) -> bool:
@@ -73,18 +72,3 @@ def bfs_solve(start_tubes: Tubes) -> Optional[list[Step]]:
 
     print("No solution found", file=sys.stderr)
     return None
-
-
-@click.command()
-@click.option("-f", "--filename", default="example_input.json", help="Input file")
-def main(filename: str):
-    tubes = parse_input(filename)
-    solution = bfs_solve(tubes)
-    if solution is None:
-        exit(1)
-    for step in solution:
-        print(step)
-
-
-if __name__ == "__main__":
-    main()

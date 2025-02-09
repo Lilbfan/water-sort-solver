@@ -16,7 +16,7 @@ def diff(a: list[Step], b: list[Step]) -> bool:
 
 
 @click.command()
-@click.option("-f", "--filename", default="example_input.json", help="Input file")
+@click.option("-f", "--filename", default="examples/example_input.json", help="Input file")
 def main(filename: str):
     tubes = parse_input(filename)
     start_a_star = time.time()
