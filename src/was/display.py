@@ -10,7 +10,6 @@ class Step:
 
     def __str__(self) -> str:
         state = ["% " * self.nTubes]
-
         arrow = [" "] * self.nTubes * 2
         arrow[self.from_tube * 2] = "|"
         arrow[self.to_tube * 2] = "^"
@@ -22,7 +21,7 @@ class Step:
         )
         state.append(" " * 2 * (start - 1) + "-" * 2 * (end - start + 1))
 
-        return "\n".join(state) + "\n\n\n"
+        return "\n".join(state)
 
     def __repr__(self) -> str:
         return str(self)
@@ -36,9 +35,6 @@ class Step:
         if self.from_tube == other.from_tube:
             return self.to_tube < other.to_tube
         return self.from_tube < other.from_tube
-
-    def __eq__(self, other: "Step") -> bool:
-        return self.from_tube == other.from_tube and self.to_tube == other.to_tube
 
     def __ge__(self, other: "Step") -> bool:
         return self > other or self == other

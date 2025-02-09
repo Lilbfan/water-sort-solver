@@ -1,9 +1,11 @@
-from water_sort_bfs import bfs_solve
-from water_sort_a_star import a_star_solve
-from common import parse_input
-from display import Step
+from was.water_sort_bfs import bfs_solve
+from was.water_sort_a_star import a_star_solve
+from was.common import parse_input
+from was.display import Step
 import click
+import datetime
 import time
+import tabulate
 
 
 def diff(a: list[Step], b: list[Step]) -> bool:
@@ -16,26 +18,41 @@ def diff(a: list[Step], b: list[Step]) -> bool:
 
 
 @click.command()
-@click.option("-f", "--filename", default="examples/example_input.json", help="Input file")
+@click.option(
+    "-f", "--filename", default="examples/example_input.json", help="Input file"
+)
 def main(filename: str):
     tubes = parse_input(filename)
     start_a_star = time.time()
     solution_a_star = a_star_solve(tubes)
-    end_a_star = time.time()
-    print("A* time:", end_a_star - start_a_star)
+    print("A* time:", datetime.timedelta(seconds=time.time() - start_a_star))
 
     start_bfs = time.time()
     solution_bfs = bfs_solve(tubes)
-    end_bfs = time.time()
-    print("BFS time:", end_bfs - start_bfs)
+    print("BFS time:", datetime.timedelta(seconds=time.time() - start_bfs))
 
     if solution_a_star is None or solution_bfs is None:
         exit(1)
 
     if diff(solution_a_star, solution_bfs):
-        print("Solutions are the same")
+        print("\033[92mSolutions are the same\033[0m")
     else:
-        print("Solutions are different")
+        print("\033[91mSolutions are different\033[0m")
+        columns = ["step", "A*", "BFS"]
+        table = []
+        for i in range(max(len(solution_a_star), len(solution_bfs))):
+            solution_a_star_step = (
+                f"{solution_a_star[i].from_tube}->{solution_a_star[i].to_tube}"
+                if i < len(solution_a_star)
+                else ""
+            )
+            solution_bfs_step = (
+                f"{solution_bfs[i].from_tube}->{solution_bfs[i].to_tube}"
+                if i < len(solution_bfs)
+                else ""
+            )
+            table.append([i, solution_a_star_step, solution_bfs_step])
+        print(tabulate.tabulate(table, headers=columns, tablefmt="rounded_grid"))
 
 
 if __name__ == "__main__":

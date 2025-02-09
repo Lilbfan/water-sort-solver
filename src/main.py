@@ -1,6 +1,8 @@
 from was.water_sort_a_star import a_star_solve
+from was.water_sort_bfs import bfs_solve
 from was.common import parse_input
 import click
+import tabulate
 
 
 @click.command()
@@ -20,8 +22,16 @@ def main(filename: str, method: str):
     if solution is None:
         exit(1)
 
-    for step in solution:
-        print(step)
+    columns = ["No."] + [f"{i + 1}" for i in range(len(tubes))]
+    table = []
+    for idx, step in enumerate(solution):
+        row = [idx + 1] + ["" for _ in range(step.nTubes)]
+        start_tube = step.from_tube if step.from_tube < step.to_tube else step.to_tube
+        end_tube = step.to_tube if step.from_tube < step.to_tube else step.from_tube
+        for i in range(start_tube, end_tube + 1):
+            row[i + 1] = ">" if step.from_tube < step.to_tube else "<"
+        table.append(row)
+    print(tabulate.tabulate(table, headers=columns, tablefmt="fancy_grid"))
 
 
 if __name__ == "__main__":
