@@ -26,3 +26,22 @@ class Step:
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __gt__(self, other: "Step") -> bool:
+        if self.from_tube == other.from_tube:
+            return self.to_tube > other.to_tube
+        return self.from_tube > other.from_tube
+
+    def __lt__(self, other: "Step") -> bool:
+        if self.from_tube == other.from_tube:
+            return self.to_tube < other.to_tube
+        return self.from_tube < other.from_tube
+
+    def __eq__(self, other: "Step") -> bool:
+        return self.from_tube == other.from_tube and self.to_tube == other.to_tube
+
+    def __ge__(self, other: "Step") -> bool:
+        return self > other or self == other
+
+    def __le__(self, other: "Step") -> bool:
+        return self < other or self == other
