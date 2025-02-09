@@ -5,16 +5,22 @@ import click
 
 @click.command()
 @click.option(
-    "-f", "--filename", default="examples/example_input.json", help="Input file"
+    "-f", "--filename", default="examples/example_input.json", help="Input file", type=str
 )
-def main(filename: str):
+@click.option(
+    "-m", "--method", default="a_star",help="Solving method", type=click.Choice(['a_star', 'bfs'], case_sensitive=False)
+)
+def main(filename: str, method: str):
     tubes = parse_input(filename)
-    solution_a_star = a_star_solve(tubes)
+    if method == "bfs":
+        solution = bfs_solve(tubes)
+    else:
+        solution = a_star_solve(tubes)
 
-    if solution_a_star is None:
+    if solution is None:
         exit(1)
 
-    for step in solution_a_star:
+    for step in solution:
         print(step)
 
 
