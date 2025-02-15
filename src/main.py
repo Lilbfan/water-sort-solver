@@ -1,6 +1,6 @@
-from was.water_sort_a_star import a_star_solve
-from was.water_sort_bfs import bfs_solve
-from was.common import parse_input
+from wss.water_sort_a_star import a_star_solve
+from wss.water_sort_bfs import bfs_solve
+from wss.common import parse_input
 import click
 import tabulate
 

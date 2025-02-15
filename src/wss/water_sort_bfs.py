@@ -2,8 +2,8 @@ import sys
 from collections import deque
 from copy import deepcopy
 from typing import Optional
-from was.display import Step
-from was.common import Tubes, MAX_TUBE_CAPACITY
+from wss.display import Step
+from wss.common import Tubes, MAX_TUBE_CAPACITY
 
 
 def is_solved(tubes: Tubes) -> bool:
