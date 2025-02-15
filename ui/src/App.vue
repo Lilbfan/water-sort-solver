@@ -2,7 +2,12 @@
 import { ref } from 'vue'
 import Tube from './components/Tube.vue'
 
-const colors: string[] = [
+interface step {
+	from: number,
+	to: number,
+}
+
+const COLORS: string[] = [
 	'rgb(255, 0, 0)',
 	'rgb(0, 255, 0)',
 	'rgb(0, 0, 255)',
@@ -11,25 +16,46 @@ const colors: string[] = [
 	'rgb(0, 255, 255)',
 	'rgb(34, 139, 34)',
 ]
-const tubes = ref<string[][]>([[]])
+const tubes = ref<string[][]>([
+	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
+	[],
+	[],
+])
 
+let solution = ref<step[] | null | undefined>(undefined)
+
+// TODO: Reset tubes is not working, seems to be display error since the default tubes are not displayed either.
 const buttons = [
 	{ text: 'Add a tube', action: () => tubes.value.push([]) },
 	{ text: 'Remove last tube', action: () => tubes.value.pop() },
-	{ text: 'Reset all tubes', action: () => tubes.value = [[]] },
+	{ text: 'Reset all tubes', action: () => {
+		tubes.value = [[]]
+		solution.value = undefined
+	} },
 	{ text: 'Solve problem', action: async () => {
 		const tubes_copy = JSON.parse(JSON.stringify(tubes.value))
 		let url = new URL(window.location.href)
 		url.pathname = url.pathname + 'solve'
 		try {
+			// TODO: Mask the solution while waiting for the response
 			const response = await fetch(url.href, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({ tubes: tubes_copy }),
+			}).then(async (response) => {
+				if (response.ok) {
+					return await response.json()
+				}
+				const error = await response.json()
+				throw new Error(error.message)
 			})
-			console.log(response)
+
+			solution.value = response.solution? response.solution : null
 		} catch (error) {
 			console.error(error)
 		}
@@ -43,7 +69,7 @@ const buttons = [
 		<h1>Water Sort Solver</h1>
 		<div class="container-colors" >
 			<button
-				v-for="color in colors"
+				v-for="color in COLORS"
 				class="btn-color"
 				:style="{ backgroundColor: color }"
 				@click="() => {
@@ -66,6 +92,16 @@ const buttons = [
 		>
 			{{ button.text }}
 		</button>
+		<div v-if="solution !== undefined">
+			<h1>Solution</h1>
+			<div v-if="solution" v-for="step in solution">
+				<!-- TODO: Draw a fany UI to show the steps -->
+				<p>Move from tube {{ step.from }} to tube {{ step.to }}</p>
+			</div>
+			<div v-else>
+				<h2>No solution found</h2>
+			</div>
+		</div>
 	</div>
 </template>
 
