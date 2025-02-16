@@ -72,7 +72,7 @@ def a_star_solve(start_tubes: Tubes) -> Optional[list[Step]]:
                     cost + heuristic(next_tubes),
                     cost + 1,
                     next_tubes,
-                    path + [Step(from_tube=i, to_tube=j, nTubes=len(tubes))],
+                    path + [Step(from_tube=i, to_tube=j, nTubes=len(tubes), state=tubes)],
                 ),
             )
 

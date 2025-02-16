@@ -3,10 +3,11 @@ class Step:
     from_tube: int
     to_tube: int
 
-    def __init__(self, from_tube: int, to_tube: int, nTubes: int) -> None:
+    def __init__(self, from_tube: int, to_tube: int, nTubes: int, state: list[list[str]] = None):
         self.from_tube = from_tube
         self.to_tube = to_tube
         self.nTubes = nTubes
+        self.state = state
 
     def __str__(self) -> str:
         state = ['% ' * self.nTubes]

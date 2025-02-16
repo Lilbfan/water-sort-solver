@@ -1,23 +1,27 @@
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, watch} from 'vue';
 import colorTube from './components/colorTube.vue';
 import axios from 'axios';
 
 interface step {
 	from: number;
 	to: number;
+	tubes: string[][];
 }
 
 const COLORS: string[] = [
 	'rgb(255, 0, 0)',
-	'rgb(0, 255, 0)',
-	'rgb(0, 0, 255)',
 	'rgb(255, 192, 203)',
 	'rgb(255, 255, 0)',
-	'rgb(0, 255, 255)',
+	'rgb(0, 255, 0)',
 	'rgb(34, 139, 34)',
+	'rgb(0, 0, 255)',
+	'rgb(0, 192, 255)',
+	'rgb(0, 255, 255)',
 ];
+
 const tubes = ref<string[][]>([
+	// TODO: Just debugging use, delete this after testing
 	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
 	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
 	['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'],
@@ -25,18 +29,29 @@ const tubes = ref<string[][]>([
 	[],
 	[],
 ]);
-
-let solution = ref<step[] | null | undefined>(undefined);
-
-// TODO: Reset tubes is not working, seems to be display error since the default tubes are not displayed either.
+const solution = ref<step[] | null | undefined>(undefined);
+const isLoading = ref(false);
+const colors_tube_key = ref(0);
 const buttons = [
 	{title: 'add', text: 'Add a tube', action: () => tubes.value.push([])},
-	{title: 'remove', text: 'Remove a tube', action: () => tubes.value.pop()},
+	{
+		title: 'remove',
+		text: 'Remove a tube',
+		action: () => {
+			if (tubes.value.length > 1) {
+				tubes.value.pop();
+			}
+
+			if (tubes.value.length === 1) {
+				tubes.value = [];
+			}
+		},
+	},
 	{
 		title: 'reset',
 		text: 'Reset all tubes',
 		action: () => {
-			tubes.value = [[]];
+			tubes.value = [];
 			solution.value = undefined;
 		},
 	},
@@ -45,18 +60,30 @@ const buttons = [
 		text: 'Solve problem',
 		action: async () => {
 			const tubes_copy = JSON.parse(JSON.stringify(tubes.value));
+			solution.value = undefined;
+			isLoading.value = true;
 			try {
-				// TODO: Mask the solution while waiting for the response
 				const response = await axios.post('/api/solve', {
 					tubes: tubes_copy,
 				});
-				solution.value = response.solution ? response.solution : null;
+				solution.value = response.data.solution
+					? response.data.solution
+					: null;
 			} catch (error) {
 				console.error(error);
+			} finally {
+				isLoading.value = false;
 			}
 		},
 	},
 ];
+
+watch(tubes, new_tubes => {
+	if (new_tubes.length === 0) {
+		tubes.value.push([]);
+	}
+	colors_tube_key.value += 1;
+});
 </script>
 
 <template>
@@ -77,11 +104,12 @@ const buttons = [
 				"
 			/>
 		</div>
-		<div class="container-tubes" :key="container - tubes">
+		<div class="container-tubes">
 			<colorTube
-				v-for="(colors_in_tube, index) in tubes"
+				v-for="colors_in_tube in tubes"
 				:colors_in_tube="colors_in_tube"
-				:key="'colors_in_tube_' + index"
+				:key="colors_tube_key"
+				tube_style="unrelated"
 			/>
 		</div>
 		<button
@@ -95,14 +123,36 @@ const buttons = [
 		<div v-if="solution !== undefined">
 			<h1>Solution</h1>
 			<div v-if="solution">
-				<div v-for="(step, index) in solution" :key="'step_' + index">
-					<!-- TODO: Draw a fany UI to show the steps -->
-					<p>Move from tube {{ step.from }} to tube {{ step.to }}</p>
+				<div
+					v-for="(step, index) in solution"
+					:key="'step_' + index"
+					class="container-step"
+				>
+					<h2>
+						Move from tube {{ step.from }} to tube {{ step.to }}
+					</h2>
+					<div class="container-tubes">
+						<colorTube
+							v-for="(tube, index) in step.tubes"
+							:colors_in_tube="tube"
+							:key="'colors_tube_' + index"
+							:tube_style="
+								step.from === index
+									? 'from'
+									: step.to === index
+										? 'to'
+										: 'unrelated'
+							"
+						/>
+					</div>
 				</div>
 			</div>
 			<div v-else>
 				<h2>No solution found</h2>
 			</div>
+		</div>
+		<div v-else-if="isLoading" class="container-loading">
+			<h1>Computing solution ...</h1>
 		</div>
 	</div>
 </template>
@@ -125,6 +175,14 @@ const buttons = [
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
+}
+
+.container-loading {
+	margin: 200px 0px;
+}
+
+.container-step {
+	margin-bottom: 320px;
 }
 
 .button {
