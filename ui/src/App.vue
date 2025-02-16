@@ -37,24 +37,9 @@ const buttons = [
 	} },
 	{ text: 'Solve problem', action: async () => {
 		const tubes_copy = JSON.parse(JSON.stringify(tubes.value))
-		let url = new URL(window.location.href)
-		url.pathname = url.pathname + 'solve'
 		try {
 			// TODO: Mask the solution while waiting for the response
-			const response = await fetch(url.href, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ tubes: tubes_copy }),
-			}).then(async (response) => {
-				if (response.ok) {
-					return await response.json()
-				}
-				const error = await response.json()
-				throw new Error(error.message)
-			})
-
+			const response = await axios.post('/api/solve', { tubes: tubes_copy })
 			solution.value = response.solution? response.solution : null
 		} catch (error) {
 			console.error(error)
