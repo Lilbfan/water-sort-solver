@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Tube from './components/Tube.vue'
+import colorTube from './components/colorTube.vue'
+import axios from 'axios'
 
 interface step {
 	from: number,
@@ -29,13 +30,13 @@ let solution = ref<step[] | null | undefined>(undefined)
 
 // TODO: Reset tubes is not working, seems to be display error since the default tubes are not displayed either.
 const buttons = [
-	{ text: 'Add a tube', action: () => tubes.value.push([]) },
-	{ text: 'Remove last tube', action: () => tubes.value.pop() },
-	{ text: 'Reset all tubes', action: () => {
+	{ title: 'add', text: 'Add a tube', action: () => tubes.value.push([]) },
+	{ title: 'remove', text: 'Remove a tube', action: () => tubes.value.pop() },
+	{ title: 'reset', text: 'Reset all tubes', action: () => {
 		tubes.value = [[]]
 		solution.value = undefined
 	} },
-	{ text: 'Solve problem', action: async () => {
+	{ title: 'solve', text: 'Solve problem', action: async () => {
 		const tubes_copy = JSON.parse(JSON.stringify(tubes.value))
 		try {
 			// TODO: Mask the solution while waiting for the response
@@ -54,9 +55,10 @@ const buttons = [
 		<h1>Water Sort Solver</h1>
 		<div class="container-colors" >
 			<button
-				v-for="color in COLORS"
+				v-for="color, index in COLORS"
 				class="btn-color"
 				:style="{ backgroundColor: color }"
+				:key="'color_' + index"
 				@click="() => {
 					if (tubes[tubes.length - 1].length < 4) {
 						tubes[tubes.length - 1].push(color)
@@ -64,24 +66,28 @@ const buttons = [
 				}"
 			/>
 		</div>
-		<div class="container-tubes">
-			<Tube
-				v-for="colors_in_tube in tubes"
+		<div class="container-tubes" :key="container-tubes">
+			<colorTube
+				v-for="colors_in_tube, index in tubes"
 				:colors_in_tube="colors_in_tube"
+				:key="'colors_in_tube_' + index"
 			/>
 		</div>
 		<button
 			class="button"
 			v-for="button in buttons"
+			:key="'button_' + button.title"
 			@click="button.action"
 		>
 			{{ button.text }}
 		</button>
 		<div v-if="solution !== undefined">
 			<h1>Solution</h1>
-			<div v-if="solution" v-for="step in solution">
-				<!-- TODO: Draw a fany UI to show the steps -->
-				<p>Move from tube {{ step.from }} to tube {{ step.to }}</p>
+			<div v-if="solution">
+				<div v-for="step, index in solution" :key="'step_' + index">
+					<!-- TODO: Draw a fany UI to show the steps -->
+					<p>Move from tube {{ step.from }} to tube {{ step.to }}</p>
+				</div>
 			</div>
 			<div v-else>
 				<h2>No solution found</h2>

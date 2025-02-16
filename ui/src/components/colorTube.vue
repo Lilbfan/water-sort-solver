@@ -1,4 +1,4 @@
-// Component: Tube
+// Component: colorTube
 <script setup lang="ts">
 	import { ref, watch } from 'vue'
 	import _ from 'lodash'
@@ -20,14 +20,14 @@
 </script>
 
 <template>
-	<div class="tube">
-		<div v-for="color in upper_color" class="color-layer" :style="{ backgroundColor: color }" />
+	<div class="color-tube">
+		<div v-for="color, index in upper_color" class="color-layer" :style="{ backgroundColor: color }" :key="'color_' + index" />
 		<div class="color-layer-bottom" :style="{ backgroundColor: bottom_color }" />
 	</div>
 </template>
 
 <style scoped>
-.tube {
+.color-tube {
 	display: flex;
 	margin: 20px;
 	flex-direction: column;
