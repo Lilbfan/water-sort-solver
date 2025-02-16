@@ -18,42 +18,40 @@ def diff(a: list[Step], b: list[Step]) -> bool:
 
 
 @click.command()
-@click.option(
-    "-f", "--filename", default="examples/example_input.json", help="Input file"
-)
+@click.option('-f', '--filename', default='examples/example_input.json', help='Input file')
 def main(filename: str):
     tubes = parse_input(filename)
     start_a_star = time.time()
     solution_a_star = a_star_solve(tubes)
-    print("A* time:", datetime.timedelta(seconds=time.time() - start_a_star))
+    print('A* time:', datetime.timedelta(seconds=time.time() - start_a_star))
 
     start_bfs = time.time()
     solution_bfs = bfs_solve(tubes)
-    print("BFS time:", datetime.timedelta(seconds=time.time() - start_bfs))
+    print('BFS time:', datetime.timedelta(seconds=time.time() - start_bfs))
 
     if solution_a_star is None or solution_bfs is None:
         exit(1)
 
     if diff(solution_a_star, solution_bfs):
-        print("\033[92mSolutions are the same\033[0m")
+        print('\033[92mSolutions are the same\033[0m')
     else:
-        print("\033[91mSolutions are different\033[0m")
-        columns = ["step", "A*", "BFS"]
+        print('\033[91mSolutions are different\033[0m')
+        columns = ['step', 'A*', 'BFS']
         table = []
         for i in range(max(len(solution_a_star), len(solution_bfs))):
             solution_a_star_step = (
-                f"{solution_a_star[i].from_tube}->{solution_a_star[i].to_tube}"
+                f'{solution_a_star[i].from_tube}->{solution_a_star[i].to_tube}'
                 if i < len(solution_a_star)
-                else ""
+                else ''
             )
             solution_bfs_step = (
-                f"{solution_bfs[i].from_tube}->{solution_bfs[i].to_tube}"
+                f'{solution_bfs[i].from_tube}->{solution_bfs[i].to_tube}'
                 if i < len(solution_bfs)
-                else ""
+                else ''
             )
             table.append([i, solution_a_star_step, solution_bfs_step])
-        print(tabulate.tabulate(table, headers=columns, tablefmt="rounded_grid"))
+        print(tabulate.tabulate(table, headers=columns, tablefmt='rounded_grid'))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

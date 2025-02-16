@@ -7,26 +7,20 @@ from wss.common import Tubes, MAX_TUBE_CAPACITY
 
 def is_solved(tubes: Tubes) -> bool:
     return all(
-        len(set(tube)) <= 1 and (len(tube) == 0 or len(tube) == MAX_TUBE_CAPACITY)
-        for tube in tubes
+        len(set(tube)) <= 1 and (len(tube) == 0 or len(tube) == MAX_TUBE_CAPACITY) for tube in tubes
     )
 
 
 def num_able_to_move(tubes: Tubes, i: int, j: int) -> int:
     if not tubes[i] or (
-        tubes[j]
-        and (len(tubes[j]) == MAX_TUBE_CAPACITY or tubes[j][-1] != tubes[i][-1])
+        tubes[j] and (len(tubes[j]) == MAX_TUBE_CAPACITY or tubes[j][-1] != tubes[i][-1])
     ):
         return 0
     color = tubes[i][-1]
     n_move = 1
     while n_move < len(tubes[i]) and tubes[i][-1 - n_move] == color:
         n_move += 1
-    return (
-        n_move
-        if len(tubes[j]) == 0 or (len(tubes[j]) + n_move <= MAX_TUBE_CAPACITY)
-        else 0
-    )
+    return n_move if len(tubes[j]) == 0 or (len(tubes[j]) + n_move <= MAX_TUBE_CAPACITY) else 0
 
 
 def get_next_states(current_tubes: Tubes) -> list[tuple[int, int, Tubes]]:
@@ -82,5 +76,5 @@ def a_star_solve(start_tubes: Tubes) -> Optional[list[Step]]:
                 ),
             )
 
-    print("No solution found", file=sys.stderr)
+    print('No solution found', file=sys.stderr)
     return None

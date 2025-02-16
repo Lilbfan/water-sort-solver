@@ -1,8 +1,8 @@
-from flask import Flask, send_from_directory
-from flask import request
+from flask import Flask, send_from_directory, request, jsonify
 from wss.water_sort_a_star import a_star_solve
 
 app = Flask(__name__, static_folder='../ui/dist', static_url_path='/')
+
 
 @app.route('/')
 def serve_frontend():
@@ -18,16 +18,10 @@ def solve():
         return {"error": "No solution found"}
 
     response = {
-        "solution": [
-            {
-                "from": solution.from_tube,
-                "to": solution.to_tube
-            }
-            for solution in solutions
-        ]
+        'solution': [{'from': solution.from_tube, 'to': solution.to_tube} for solution in solutions]
     }
     return response
 
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
-

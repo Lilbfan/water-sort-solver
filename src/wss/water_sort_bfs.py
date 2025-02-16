@@ -8,8 +8,7 @@ from wss.common import Tubes, MAX_TUBE_CAPACITY
 
 def is_solved(tubes: Tubes) -> bool:
     return all(
-        len(set(tube)) <= 1 and (len(tube) == 0 or len(tube) == MAX_TUBE_CAPACITY)
-        for tube in tubes
+        len(set(tube)) <= 1 and (len(tube) == 0 or len(tube) == MAX_TUBE_CAPACITY) for tube in tubes
     )
 
 
@@ -66,9 +65,7 @@ def bfs_solve(start_tubes: Tubes) -> Optional[list[Step]]:
             return path
 
         for i, j, next_tubes in get_next_states(tubes):
-            queue.append(
-                (next_tubes, path + [Step(from_tube=i, to_tube=j, nTubes=len(tubes))])
-            )
+            queue.append((next_tubes, path + [Step(from_tube=i, to_tube=j, nTubes=len(tubes))]))
 
-    print("No solution found", file=sys.stderr)
+    print('No solution found', file=sys.stderr)
     return None
