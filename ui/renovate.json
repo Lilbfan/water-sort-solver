@@ -1,0 +1,9 @@
+{
+	"extends": ["config:base", "docker:disable", ":disableDependencyDashboard"],
+	"pinVersions": false,
+	"rebaseStalePrs": true,
+	"lockFileMaintenance": {
+		"enabled": true,
+		"recreateClosed": true
+	}
+}
